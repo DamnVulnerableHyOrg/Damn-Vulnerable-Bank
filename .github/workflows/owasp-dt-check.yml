@@ -1,0 +1,36 @@
+name: OWASP Dependency Track Check
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install BackendServer dependencies
+        working-directory: BackendServer
+        run: npm install --ignore-scripts
+
+      - name: Generate CycloneDX SBOM
+        working-directory: BackendServer
+        run: |
+          npx --yes @cyclonedx/cyclonedx-npm \
+            --output-format XML \
+            --output-file ../bom.xml
+
+      - name: Upload SBOM to Dependency-Track
+        uses: DependencyTrack/gh-upload-sbom@v3.1.0
+        with:
+          serverHostname: ${{ secrets.OWASP_DT_HOSTNAME }}
+          apiKey: ${{ secrets.OWASP_DT_KEY }}
+          projectName: ${{ github.event.repository.name }}
+          projectVersion: ${{ github.ref_name }}
+          bomFilename: bom.xml
+          autoCreate: true
