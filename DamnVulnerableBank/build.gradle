@@ -23,3 +23,14 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+plugins {
+  id "org.sonarqube" version "7.2.0.6526"
+}
+
+sonar {
+  properties {
+    property "sonar.projectKey", "DamnVulnerableHyOrg_Damn-Vulnerable-Bank_2ef01b94-9cfe-4b23-b060-c6e7acd60c40"
+    property "sonar.projectName", "Damn-Vulnerable-Bank"
+  }
+}
